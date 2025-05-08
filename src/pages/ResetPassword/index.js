@@ -10,12 +10,15 @@ export default function Register(){
         
         <View style={styles.container}>
             <Animatable.View animation="fadeInLeft" delay={500} style={styles.containerHeader}>
-                <Text style={styles.message}>Reset de senha</Text>
+                <Text style={styles.message}>Alterar Senha</Text>
             </Animatable.View>
 
             <Animatable.View animation="fadeInUp" style={styles.containerForm}>
+                <Text style={styles.ForgotText}>Esqueceu sua senha? </Text>
+                <Text style={styles.text}>não se preocupe, enviaremos ao seu Email</Text> 
+                <Text style={styles.text}>um codigo para checar sua autenticidade.</Text>
 
-                <Text style={styles.title}Nome></Text>
+                <Text style={styles.title}Nome>Email da conta:</Text>
                 <TextInput
                     placeholder="Digite seu email cadastrado para receber o código:"
                     style={styles.input}
@@ -49,23 +52,39 @@ const styles = StyleSheet.create({
     },
     containerForm:{
         backgroundColor:'#FFF',
-        flex:0.3,
+        flex:0.5,
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
+        borderBottomLeftRadius:25,
+        borderBottomRightRadius:25,
         paddingStart:'5%',
         paddingEnd:'5%',
-        justifyContent:'center',
-        alignItems:'center',
+        justifyContent:'center',    
+    },
+
+    ForgotText:{
+        color:'#38a69d',
+        fontSize:22,
+        fontWeight:'bold',
+        marginBottom:10,
+    },
+
+    text:{
+        fontSize:16,
+        
     },
     title:{
-        fontSize:20,
-        marginTop:28,
+        fontSize:18,
+        marginTop:52,
+        marginBottom:10,
+        textAlign:'left',
     },
     input:{
         borderBottomWidth:1,
         height:40,
         marginBottom:12,
         fontSize:16,
+        
     },
     buttonForget:{
         fontWeight:'bold',

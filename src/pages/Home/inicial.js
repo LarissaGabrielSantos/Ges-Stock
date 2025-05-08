@@ -1,22 +1,32 @@
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome5, Entypo, Feather } from '@expo/vector-icons';
 
+
+
 export default function HomeScreen() {
+  
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="settings-outline" size={28} />
+        <TouchableOpacity>
+          <Ionicons name="settings-outline" size={28} />
+        </TouchableOpacity>
         <Text style={styles.logo}>📈 GES Stock</Text>
-        <Ionicons name="log-out-outline" size={28} />
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Ionicons name="log-out-outline" size={28} />
+        </TouchableOpacity>
       </View>
 
       {/* User Info */}
       <View style={styles.userCard}>
         <View style={styles.userLeft}>
           <Ionicons name="person-circle-outline" size={36} />
-          <Text style={styles.welcome}>Bom dia, <Text style={styles.username}>LARISSA</Text></Text>
+          <Text style={styles.welcome}>Bom dia, <Text style={styles.username}>GABRIEL</Text></Text>
         </View>
         <Text style={styles.store}>Loja <Text style={styles.storeName}>LedOeste</Text></Text>
       </View>

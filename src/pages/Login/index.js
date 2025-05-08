@@ -31,7 +31,10 @@ export default function Login(){
                     <Text style={styles.Forgetbutton}>Esqueci minha senha</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity
+                onPress={() => navigation.navigate('Home')} 
+                style={styles.button}
+                >
                     <Text style={styles.buttonText}>Acessar</Text>
                 </TouchableOpacity>
 

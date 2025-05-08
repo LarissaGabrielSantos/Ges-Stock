@@ -3,7 +3,7 @@ import Welcome from '../pages/Welcome'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
 import ResetPassword from '../pages/ResetPassword'
-import Home from '../pages/Home'
+import Home from '../pages/Home/inicial.js'
 
 const Stack = createNativeStackNavigator();
 
