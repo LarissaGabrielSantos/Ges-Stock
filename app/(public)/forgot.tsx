@@ -1,11 +1,8 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
 import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-
 import * as Animatable from 'react-native-animatable'
 
-export default function Register(){
-    const navigation = useNavigation();
+export default function Forgot(){
     return(
         
         <View style={styles.container}>
@@ -18,7 +15,7 @@ export default function Register(){
                 <Text style={styles.text}>não se preocupe, enviaremos ao seu Email</Text> 
                 <Text style={styles.text}>um codigo para checar sua autenticidade.</Text>
 
-                <Text style={styles.title}Nome>Email da conta:</Text>
+                <Text style={styles.title}>Email da conta:</Text>
                 <TextInput
                     placeholder="Digite seu email cadastrado para receber o código:"
                     style={styles.input}
@@ -41,7 +38,7 @@ const styles = StyleSheet.create({
         backgroundColor:'#38a69d',
     },
     containerHeader:{
-        marginTop:'14',
+        marginTop:14,
         marginBottom:'8%',
         paddingStart:'5%', 
     },
