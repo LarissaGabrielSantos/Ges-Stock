@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { useTheme } from '../../utils/context/themedContext';
 import { useRouter } from 'expo-router';
+import { logTransaction } from '../../utils/transactionLogger'; // <-- Importar o logger de transações
 
 // Funções de formatação (mantidas)
 const formatCentsToCurrency = (cents: number): string => {
@@ -37,7 +38,7 @@ export default function CadastroCategoria() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [addingCategory, setAddingCategory] = useState(false);
-  const { theme } = useTheme();
+  const { theme } = useTheme(); // Chamar o hook useTheme
 
   const CATEGORIAS_KEY = `user_${userId}_categorias`;
 
@@ -86,6 +87,11 @@ export default function CadastroCategoria() {
       setCategorias(updatedCategorias);
       setCategoria('');
       Alert.alert("Sucesso", "Categoria adicionada!");
+
+      // --- REGISTRAR TRANSAÇÃO: Adição de Categoria ---
+      await logTransaction(userId, 'add_category', { categoryName: newCategoria.nome });
+      // --- FIM REGISTRO ---
+
     } catch (e) {
       console.error("Erro ao adicionar categoria no Async Storage:", e);
       Alert.alert("Erro", "Não foi possível adicionar a categoria.");
@@ -103,11 +109,20 @@ export default function CadastroCategoria() {
         {
           text: "Excluir",
           onPress: async () => {
+            if (!userId) { // Garante userId antes de deletar e logar
+              Alert.alert("Erro", "Usuário não identificado.");
+              return;
+            }
             try {
               const updatedCategorias = categorias.filter(cat => cat.id !== id);
               await AsyncStorage.setItem(CATEGORIAS_KEY, JSON.stringify(updatedCategorias));
               setCategorias(updatedCategorias);
               Alert.alert("Sucesso", "Categoria excluída!");
+
+              // --- REGISTRAR TRANSAÇÃO: Exclusão de Categoria ---
+              await logTransaction(userId, 'delete_category', { categoryName: nome });
+              // --- FIM REGISTRO ---
+
             } catch (e) {
               console.error("Erro ao deletar categoria:", e);
               Alert.alert("Erro", "Não foi possível excluir a categoria.");
@@ -127,11 +142,11 @@ export default function CadastroCategoria() {
     );
   }
 
-  // <-- MUDANÇA: A estrutura da tela foi alterada
+  // --- MUDANÇA: A estrutura da tela foi alterada para View estática + FlatList ---
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-      {/* 1. Cabeçalho da tela (fora da FlatList) */}
-      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10 }]}>
+      {/* Cabeçalho da tela (estático) */}
+      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10, backgroundColor: theme.cardBackground, borderBottomColor: theme.cardBorder }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={28} color={theme.text} />
         </TouchableOpacity>
@@ -139,7 +154,7 @@ export default function CadastroCategoria() {
         <View style={styles.spacer} />
       </View>
 
-      {/* 2. Formulário de adição (fora da FlatList) */}
+      {/* Formulário de adição (estático) */}
       <View style={styles.formContainer}>
         <TextInput
           placeholder="Nome da categoria"
@@ -157,7 +172,7 @@ export default function CadastroCategoria() {
         </TouchableOpacity>
       </View>
 
-      {/* 3. A FlatList agora cuida apenas da lista */}
+      {/* A FlatList agora cuida apenas da lista (e é o componente de rolagem principal) */}
       <FlatList
         data={categorias}
         keyExtractor={(item) => item.id}
@@ -173,7 +188,6 @@ export default function CadastroCategoria() {
           <Text style={[styles.emptyListText, { color: theme.text }]}>Nenhuma categoria cadastrada ainda.</Text>
         )}
         contentContainerStyle={styles.flatListContentContainer}
-        // <-- MUDANÇA: Removemos o ListHeaderComponent que continha o formulário
       />
     </SafeAreaView>
   );
@@ -182,53 +196,52 @@ export default function CadastroCategoria() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    // backgroundColor handled by theme
   },
-  header: {
+  header: { // Estilo para o header da tela
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 15,
-    paddingBottom: 15,
-    backgroundColor: 'transparent',
+    paddingVertical: 15,
+    backgroundColor: 'transparent', // Será preenchido pelo theme.cardBackground no inline style
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     flex: 1,
     textAlign: 'center',
+    // color handled by theme
   },
   backButton: {
     padding: 5,
   },
   spacer: {
-    width: 38,
+    width: 28, // Para simetria com o botão de voltar
   },
-  // <-- MUDANÇA: Novo container para o formulário
-  formContainer: {
+  formContainer: { // Novo container para o formulário (anteriormente parte do ListHeaderComponent)
     paddingHorizontal: 20,
     marginTop: 10,
     marginBottom: 20,
   },
-  flatListContentContainer: {
+  flatListContentContainer: { // Estilo para o contentContainerStyle da FlatList
     paddingHorizontal: 20,
     paddingBottom: 20,
     flexGrow: 1,
   },
-  // <-- MUDANÇA: O `listHeaderContainer` foi renomeado para `formContainer` e movido
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-  },
   input: {
     borderWidth: 1,
+    // borderColor handled by theme
     borderRadius: 8,
     height: 50,
     paddingHorizontal: 15,
-    marginBottom: 20, // <-- MUDANÇA: A margem agora fica no próprio input
+    marginBottom: 20, // Margem abaixo do input
     fontSize: 16,
+    // backgroundColor handled by theme
+    // color handled by theme
   },
   button: {
+    // backgroundColor handled by theme
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -242,13 +255,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#a0a0a0',
   },
   buttonText: {
+    // color handled by theme
     fontWeight: 'bold',
     fontSize: 18,
   },
   card: {
+    // backgroundColor handled by theme
     padding: 15,
     borderRadius: 8,
     borderWidth: 1,
+    // borderColor handled by theme
     marginBottom: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -263,13 +279,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     fontSize: 16,
+    // color handled by theme
     fontStyle: 'italic',
   },
   loadingContainer: {
-    // Renomeei para não confundir com o antigo listHeaderContainer
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-  }
+    // backgroundColor handled by theme
+  },
+  loadingText: { // Estilo para o texto de carregamento inicial
+    marginTop: 10,
+    fontSize: 16,
+    // color handled by theme
+  },
 });

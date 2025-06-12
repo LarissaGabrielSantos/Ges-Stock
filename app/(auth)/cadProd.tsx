@@ -4,9 +4,12 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Activi
 import { useAuth } from "@clerk/clerk-expo";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { useTheme } from '../../utils/context/themedContext'; // <-- IMPORTAR useTheme AQUI
+import { useTheme } // <-- Caminho atualizado pelo seu feedback
+ from '../../utils/context/themedContext'; 
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'; // <-- IMPORTAR useRouter
+import { useRouter } from 'expo-router';
+import { logTransaction } from '../../utils/transactionLogger'; // <-- IMPORTAR O LOGGER DE TRANSAÇÕES
+
 
 // Converte um número inteiro (centavos) para uma string de moeda formatada ($X.XX)
 const formatCentsToCurrency = (cents: number): string => {
@@ -41,7 +44,7 @@ interface Produto {
   nome: string;
   quantidade: number;
   preco: number;
-  categoriaId: string;
+  categoriaId: string; // Renomeado de categoria_id para consistência com JS
   userId: string;
 }
 
@@ -56,8 +59,9 @@ export default function CadastroProduto() {
   const [loadingCategorias, setLoadingCategorias] = useState(true);
   const [savingProduct, setSavingProduct] = useState(false);
 
-  const { theme } = useTheme(); // <-- CHAMAR O HOOK useTheme AQUI!
-  const router = useRouter(); // <-- CHAMAR useRouter PARA BOTÃO DE VOLTAR
+  const { theme } = useTheme(); // Chamar o hook useTheme
+  const router = useRouter(); // Chamar useRouter para botão de voltar
+
 
   // Chaves para AsyncStorage
   const CATEGORIAS_ASYNC_KEY = `user_${userId}_categorias`;
@@ -128,6 +132,16 @@ export default function CadastroProduto() {
       setQuantidade('');
       setPrecoCents(0); // Reseta para 0 centavos
       setSelectedCategoria(null);
+
+      // --- REGISTRAR TRANSAÇÃO: Adição de Produto ---
+      await logTransaction(userId, 'add_product', {
+        productName: newProduto.nome,
+        quantityAdded: newProduto.quantidade,
+        newPrice: newProduto.preco,
+        productCategoryName: selectedCategoria.nome, // Nome da categoria
+      });
+      // --- FIM REGISTRO ---
+
     } catch (e) {
       console.error("Erro ao salvar produto no Async Storage:", e);
       Alert.alert("Erro ao Salvar", "Não foi possível salvar o produto.");
@@ -138,7 +152,8 @@ export default function CadastroProduto() {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10 }]}>
+      {/* Header Customizado */}
+      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10, backgroundColor: theme.cardBackground, borderBottomColor: theme.cardBorder }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={28} color={theme.text} />
         </TouchableOpacity>
@@ -232,6 +247,7 @@ export default function CadastroProduto() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    // backgroundColor handled by theme
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -240,21 +256,27 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
+    // borderColor handled by theme
     borderRadius: 8,
     height: 50,
     paddingHorizontal: 15,
     marginBottom: 20,
     fontSize: 16,
+    // backgroundColor handled by theme
+    // color handled by theme
   },
   inputSelect: {
     borderWidth: 1,
+    // borderColor handled by theme
     borderRadius: 8,
     height: 50,
     paddingHorizontal: 15,
     justifyContent: 'center',
     marginBottom: 20,
+    // backgroundColor handled by theme
   },
   button: {
+    // backgroundColor handled by theme
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -268,6 +290,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#a0a0a0',
   },
   buttonText: {
+    // color handled by theme (via conditional inline style)
     fontWeight: 'bold',
     fontSize: 18,
   },
@@ -278,6 +301,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContent: {
+    // backgroundColor handled by theme
     padding: 20,
     borderRadius: 10,
     width: '85%',
@@ -288,24 +312,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 15,
     textAlign: 'center',
+    // color handled by theme
   },
   modalItem: {
     padding: 12,
     borderBottomWidth: 1,
+    // borderBottomColor handled by theme
   },
   emptyCategoriesText: {
     textAlign: 'center',
     marginTop: 10,
     fontSize: 16,
+    // color handled by theme
     fontStyle: 'italic',
   },
   closeModalButton: {
     marginTop: 20,
+    // backgroundColor handled by theme
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
   closeModalButtonText: {
+    // color handled by theme
     fontWeight: 'bold',
     fontSize: 18,
   },
@@ -314,6 +343,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+    // backgroundColor handled by theme
   },
   header: {
     flexDirection: 'row',

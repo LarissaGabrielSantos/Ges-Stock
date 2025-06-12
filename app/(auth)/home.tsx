@@ -77,7 +77,7 @@ export default function Home() {
             <Feather name="bar-chart-2" size={30} color={theme.text} /> {/* Cor do ícone */}
             <Text style={styles.boxText}>Exportar dados</Text>
           </TouchableOpacity>
-            <TouchableOpacity style={styles.box} onPress={() => router.push("(auth)/TransactionHistoryScreen")}> {/* <-- CORRIGIDO AQUI! */}
+            <TouchableOpacity style={styles.box} onPress={() => router.push("(auth)/historicoTransacoes")}> {/* <-- CORRIGIDO AQUI! */}
             <MaterialIcons name="qr-code" size={30} color={theme.text} />
             <Text style={styles.boxText}>Gerar relatório</Text>
           </TouchableOpacity>
