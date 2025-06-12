@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, StatusBar, SafeAreaView, Alert } from 'react-native';
+// 1. Image foi adicionado aqui
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, StatusBar, SafeAreaView, Alert, Image } from 'react-native'; 
 import { Ionicons, MaterialIcons, FontAwesome5, Entypo, Feather } from '@expo/vector-icons';
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { useTheme } from '../../utils/context/themedContext'; // Caminho para o ThemeContext
@@ -39,7 +40,13 @@ export default function Home() {
           <TouchableOpacity onPress={() => router.push("(auth)/config")}>
             <Ionicons name="settings-outline" size={28} color={theme.text} /> {/* Cor do ícone */}
           </TouchableOpacity>
-          <Text style={styles.logo}>📈 GES Stock</Text>
+          
+          {/* 2. A linha de texto foi substituída por esta imagem */}
+          <Image 
+            source={require('../../assets/logo2.png')} 
+            style={{ width: 150, height: 40, resizeMode: 'contain' }} 
+          />
+          
           <TouchableOpacity onPress={handleLogout} >
             <Ionicons name="log-out-outline" size={28} color={theme.text} /> {/* Cor do ícone */}
           </TouchableOpacity>
@@ -70,9 +77,9 @@ export default function Home() {
             <Feather name="bar-chart-2" size={30} color={theme.text} /> {/* Cor do ícone */}
             <Text style={styles.boxText}>Exportar dados</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.box} onPress={() => router.push("(auth)/gerarQrCode")}>
-            <MaterialIcons name="qr-code" size={30} color={theme.text} /> {/* Cor do ícone */}
-            <Text style={styles.boxText}>Gerar QrCode</Text>
+            <TouchableOpacity style={styles.box} onPress={() => router.push("(auth)/TransactionHistoryScreen")}> {/* <-- CORRIGIDO AQUI! */}
+            <MaterialIcons name="qr-code" size={30} color={theme.text} />
+            <Text style={styles.boxText}>Gerar relatório</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.boxVizu} onPress={() => router.push("(auth)/VizuEstoq")}>
             <FontAwesome5 name="search" size={24} color={theme.text} /> {/* Cor do ícone */}

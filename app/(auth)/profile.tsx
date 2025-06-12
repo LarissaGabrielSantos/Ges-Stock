@@ -1,12 +1,12 @@
-// Exemplo de Estrutura para profile.tsx Customizado (Não Completo)
+// ARQUIVO profile.tsx
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, StyleSheet, SafeAreaView, Platform, ScrollView , StatusBar} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, StyleSheet, SafeAreaView, Platform, ScrollView, StatusBar, Modal } from 'react-native';
 import { useUser, useClerk } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons'; // Para o ícone de voltar
-import Constants from 'expo-constants'; // Certifique-se de ter 'expo install expo-constants'
-
+import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
+import { useTheme } from '../../utils/context/themedContext';
 
 export default function CustomProfile() {
   const { isLoaded, user } = useUser();
@@ -18,6 +18,15 @@ export default function CustomProfile() {
   const [companyName, setCompanyName] = useState('');
   const [loadingSave, setLoadingSave] = useState(false);
 
+  // Estados para Mudar Senha Modal
+  const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [loadingChangePassword, setLoadingChangePassword] = useState(false);
+
+  const { theme } = useTheme();
+
   useEffect(() => {
     if (isLoaded && user) {
       setFirstName(user.firstName || '');
@@ -28,32 +37,44 @@ export default function CustomProfile() {
 
   const handleSaveProfile = async () => {
     if (!isLoaded || !user || loadingSave) return;
-    setLoadingSave(true);
-    try {
-      await user.update({
-        firstName: firstName,
-        lastName: lastName,
-        unsafeMetadata: {
-          companyName: companyName,
+
+    // ADICIONAR ALERTA DE CONFIRMAÇÃO AQUI
+    Alert.alert(
+      "Confirmar Alterações",
+      "Tem certeza que deseja salvar as alterações no seu perfil?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Salvar",
+          onPress: async () => {
+            setLoadingSave(true);
+            try {
+              await user.update({
+                firstName: firstName,
+                lastName: lastName,
+                unsafeMetadata: {
+                  companyName: companyName,
+                },
+              });
+              Alert.alert("Sucesso", "Perfil atualizado!");
+            } catch (e: any) {
+              Alert.alert("Erro", e.errors?.[0]?.message || "Não foi possível atualizar o perfil.");
+            } finally {
+              setLoadingSave(false);
+            }
+          },
         },
-      });
-      Alert.alert("Sucesso", "Perfil atualizado!");
-    } catch (e: any) {
-      Alert.alert("Erro", e.errors?.[0]?.message || "Não foi possível atualizar o perfil.");
-    } finally {
-      setLoadingSave(false);
-    }
+      ],
+      { cancelable: false }
+    );
   };
 
   const handleSignOut = async () => {
-    Alert.alert( // Adicionar Alert para confirmação
+    Alert.alert(
       "Confirmar Saída",
       "Tem certeza que deseja sair da sua conta?",
       [
-        {
-          text: "Cancelar",
-          style: "cancel"
-        },
+        { text: "Cancelar", style: "cancel" },
         {
           text: "Sair",
           onPress: async () => {
@@ -66,81 +87,164 @@ export default function CustomProfile() {
     );
   };
 
+  // === LÓGICA PARA MUDAR SENHA ===
+  const handleChangePassword = async () => {
+    if (!isLoaded || !user || loadingChangePassword) return;
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      Alert.alert("Erro", "Por favor, preencha todos os campos de senha.");
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      Alert.alert("Erro", "A nova senha e a confirmação não coincidem.");
+      return;
+    }
+
+    Alert.alert(
+      "Confirmar Alteração de Senha",
+      "Tem certeza que deseja mudar sua senha?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Mudar Senha",
+          onPress: async () => {
+            setLoadingChangePassword(true);
+            try {
+              await user.updatePassword({
+                currentPassword: currentPassword,
+                newPassword: newPassword,
+              });
+              Alert.alert("Sucesso", "Senha alterada com sucesso!");
+              setChangePasswordModalVisible(false);
+              setCurrentPassword('');
+              setNewPassword('');
+              //setConfirmNewPassword(''); // Já limpa no retorno do modal
+            } catch (e: any) {
+              Alert.alert("Erro", e.errors?.[0]?.message || "Não foi possível mudar a senha.");
+            } finally {
+              setLoadingChangePassword(false);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   if (!isLoaded || !user) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#38a69d" />
-          <Text style={styles.loadingText}>Carregando perfil...</Text>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+        <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+          <ActivityIndicator size="large" color={theme.text} />
+          <Text style={[styles.loadingText, { color: theme.text }]}>Carregando perfil...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
       <View style={styles.container}>
         {/* Header Customizado */}
-        <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10 }]}>
+        <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10, backgroundColor: theme.cardBackground, borderBottomColor: theme.cardBorder }]}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={28} color="#333" />
+            <Ionicons name="arrow-back" size={28} color={theme.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Meu Perfil</Text>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>Meu Perfil</Text>
           <TouchableOpacity onPress={handleSignOut} style={styles.logoutButton}>
-            <Ionicons name="log-out-outline" size={28} color="#333" />
+            <Ionicons name="log-out-outline" size={28} color={theme.text} />
           </TouchableOpacity>
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.sectionTitle}>Informações Básicas</Text>
-          <Text style={styles.infoText}>Email: {user.emailAddresses[0]?.emailAddress}</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Informações Básicas</Text>
+          <Text style={[styles.infoText, { color: theme.text }]}>Email Principal: {user.emailAddresses.find(ea => ea.id === user.primaryEmailAddressId)?.emailAddress || 'N/A'}</Text>
 
-          <Text style={styles.label}>Nome</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Nome</Text>
           <TextInput
             placeholder="Nome"
+            style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.cardBorder, color: theme.inputText }]}
+            placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
             value={firstName}
             onChangeText={setFirstName}
-            style={styles.input}
           />
-          <Text style={styles.label}>Sobrenome</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Sobrenome</Text>
           <TextInput
             placeholder="Sobrenome"
+            style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.cardBorder, color: theme.inputText }]}
+            placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
             value={lastName}
             onChangeText={setLastName}
-            style={styles.input}
           />
-          <Text style={styles.label}>Nome da Empresa</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Nome da Empresa</Text>
           <TextInput
             placeholder="Nome da Empresa"
+            style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.cardBorder, color: theme.inputText }]}
+            placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
             value={companyName}
             onChangeText={setCompanyName}
-            style={styles.input}
           />
 
-          <TouchableOpacity onPress={handleSaveProfile} disabled={loadingSave} style={styles.button}>
-            {loadingSave ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Salvar Alterações</Text>}
+          <TouchableOpacity style={[styles.button, { backgroundColor: theme.buttonPrimaryBg }]} onPress={handleSaveProfile} disabled={loadingSave}>
+            {loadingSave ? <ActivityIndicator color={theme.buttonPrimaryText} /> : <Text style={[styles.buttonText, { color: theme.buttonPrimaryText }]}>Salvar Alterações</Text>}
           </TouchableOpacity>
 
-          <Text style={styles.sectionTitle}>Opções de Segurança</Text>
-          {/* Aqui você adicionaria links ou botões para: */}
-          {/* - Mudar Senha: user.updatePassword() */}
-          {/* - Gerenciar Emails: user.createEmailAddress(), emailAddress.destroy() */}
-          {/* - Gerenciar 2FA */}
-          <TouchableOpacity style={styles.securityOptionButton}>
-            <Text style={styles.securityOptionText}>Mudar Senha</Text>
-            <Ionicons name="chevron-forward" size={20} color="#555" />
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Opções de Segurança</Text>
+          
+          {/* Botão para Mudar Senha */}
+          <TouchableOpacity style={[styles.securityOptionButton, { backgroundColor: theme.cardBackground, borderColor: theme.cardBorder }]} onPress={() => setChangePasswordModalVisible(true)}>
+            <Text style={[styles.securityOptionText, { color: theme.text }]}>Mudar Senha</Text>
+            <Ionicons name="chevron-forward" size={20} color={theme.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.securityOptionButton}>
-            <Text style={styles.securityOptionText}>Gerenciar Endereços de Email</Text>
-            <Ionicons name="chevron-forward" size={20} color="#555" />
-          </TouchableOpacity>
-          {/* ... outras opções */}
 
-          <TouchableOpacity onPress={handleSignOut} style={styles.redButton}>
+          <TouchableOpacity onPress={handleSignOut} style={[styles.redButton, { backgroundColor: theme.red }]}>
             <Text style={styles.redButtonText}>Sair da Conta</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
+
+      {/* === MODAL PARA MUDAR SENHA === */}
+      <Modal visible={changePasswordModalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>Mudar Senha</Text>
+            <ScrollView contentContainerStyle={styles.modalScrollView}>
+              <TextInput
+                placeholder="Senha Atual"
+                style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.cardBorder, color: theme.inputText }]}
+                placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
+                secureTextEntry
+                value={currentPassword}
+                onChangeText={setCurrentPassword}
+              />
+              <TextInput
+                placeholder="Nova Senha"
+                style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.cardBorder, color: theme.inputText }]}
+                placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
+                secureTextEntry
+                value={newPassword}
+                onChangeText={setNewPassword}
+              />
+              <TextInput
+                placeholder="Confirmar Nova Senha"
+                style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.cardBorder, color: theme.inputText }]}
+                placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
+                secureTextEntry
+                value={confirmNewPassword}
+                onChangeText={setConfirmNewPassword}
+              />
+              <TouchableOpacity style={[styles.button, { backgroundColor: theme.buttonPrimaryBg }]} onPress={handleChangePassword} disabled={loadingChangePassword}>
+                {loadingChangePassword ? <ActivityIndicator color={theme.buttonPrimaryText} /> : <Text style={[styles.buttonText, { color: theme.buttonPrimaryText }]}>Mudar Senha</Text>}
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.buttonCancel, { backgroundColor: theme.buttonSecondaryBg }]} onPress={() => setChangePasswordModalVisible(false)}>
+                <Text style={[styles.buttonTextCancel, { color: theme.buttonSecondaryText }]}>Cancelar</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* === MODAL PARA GERENCIAR EMAILS (REMOVIDO COMPLETAMENTE) === */}
     </SafeAreaView>
   );
 }
@@ -177,6 +281,8 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    flex: 1,
+    textAlign: 'center',
     color: '#333',
   },
   backButton: {
@@ -187,12 +293,20 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+    paddingBottom: 40,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 20,
     marginBottom: 10,
+    color: '#333',
+  },
+  sectionSubtitle: { // Este estilo foi removido do styles pois não é mais usado
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 15,
+    marginBottom: 8,
     color: '#333',
   },
   infoText: {
@@ -222,6 +336,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   buttonText: {
     color: '#fff',
@@ -232,19 +350,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 15,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#eee',
     marginBottom: 10,
+    backgroundColor: '#fff',
   },
   securityOptionText: {
     fontSize: 16,
     color: '#333',
   },
   redButton: {
-    backgroundColor: '#e53935', // Um vermelho mais suave
+    backgroundColor: '#e53935',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -255,5 +372,61 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 18,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '90%',
+    maxHeight: '80%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+    color: '#333',
+  },
+  modalScrollView: {
+    paddingBottom: 10,
+  },
+  buttonCancel: {
+    backgroundColor: '#e0e0e0',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonTextCancel: {
+    color: '#333',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  emailItem: { // Este estilo será removido do styles pois não é mais usado
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: '#eee',
+    marginBottom: 5,
+    backgroundColor: '#fff',
+  },
+  emailText: { // Este estilo será removido do styles pois não é mais usado
+    fontSize: 16,
+    flex: 1,
+    color: '#333',
+  },
+  primaryEmailTag: { // Este estilo será removido do styles pois não é mais usado
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    marginLeft: 5,
+    color: '#007bff',
   },
 });

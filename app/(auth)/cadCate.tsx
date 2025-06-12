@@ -1,13 +1,29 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from "@clerk/clerk-expo";
-// REMOVER ScrollView aqui: Já que FlatList fará o scroll principal
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert, ActivityIndicator, SafeAreaView, Platform, StatusBar } from 'react-native'; 
-import { MaterialIcons } from '@expo/vector-icons';
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert, ActivityIndicator, SafeAreaView, Platform, StatusBar } from 'react-native';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants'; 
+import Constants from 'expo-constants';
+import { useTheme } from '../../utils/context/themedContext';
+import { useRouter } from 'expo-router';
 
-// Tipagem para a categoria (para Async Storage)
+// Funções de formatação (mantidas)
+const formatCentsToCurrency = (cents: number): string => {
+  if (isNaN(cents) || cents < 0) return "$0.00";
+  const actualCents = Math.round(Math.max(0, cents));
+  const str = String(actualCents).padStart(3, '0');
+  const integerPart = str.slice(0, -2);
+  const decimalPart = str.slice(-2);
+  return `$${integerPart}.${decimalPart}`;
+};
+
+const parseCurrencyInputToCents = (text: string): number => {
+  const cleanText = text.replace(/[^0-9]/g, '');
+  if (!cleanText) return 0;
+  return parseInt(cleanText, 10);
+};
+
+// Tipagem
 interface Categoria {
   id: string;
   nome: string;
@@ -16,10 +32,12 @@ interface Categoria {
 
 export default function CadastroCategoria() {
   const { userId, isLoaded } = useAuth();
+  const router = useRouter();
   const [categoria, setCategoria] = useState('');
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [addingCategory, setAddingCategory] = useState(false);
+  const { theme } = useTheme();
 
   const CATEGORIAS_KEY = `user_${userId}_categorias`;
 
@@ -52,15 +70,10 @@ export default function CadastroCategoria() {
   }, [isLoaded, userId, loadCategorias]);
 
   const adicionarCategoria = async () => {
-    if (!categoria.trim()) {
-      Alert.alert("Erro", "Por favor, digite o nome da categoria.");
+    if (!categoria.trim() || !userId) {
+      Alert.alert("Erro", "Por favor, digite o nome da categoria e certifique-se de que está logado.");
       return;
     }
-    if (!userId) {
-      Alert.alert("Erro", "Usuário não identificado. Tente novamente.");
-      return;
-    }
-
     setAddingCategory(true);
     try {
       const newCategoria: Categoria = {
@@ -68,7 +81,6 @@ export default function CadastroCategoria() {
         nome: categoria.trim(),
         userId: userId,
       };
-
       const updatedCategorias = [...categorias, newCategoria];
       await AsyncStorage.setItem(CATEGORIAS_KEY, JSON.stringify(updatedCategorias));
       setCategorias(updatedCategorias);
@@ -97,7 +109,7 @@ export default function CadastroCategoria() {
               setCategorias(updatedCategorias);
               Alert.alert("Sucesso", "Categoria excluída!");
             } catch (e) {
-              console.error("Erro ao deletar categoria do Async Storage:", e);
+              console.error("Erro ao deletar categoria:", e);
               Alert.alert("Erro", "Não foi possível excluir a categoria.");
             }
           },
@@ -106,66 +118,62 @@ export default function CadastroCategoria() {
     );
   };
 
-  // --- COMPONENTE DE HEADER DA LISTA ---
-  // Este View conterá todo o conteúdo que antes estava ANTES da FlatList
-  const ListHeader = () => (
-    <View style={styles.listHeaderContainer}> {/* Novo container para o header da lista */}
-      <Text
-        style={[
-          styles.headerText,
-          { paddingTop: (Constants.statusBarHeight || 0) + 10 }
-        ]}
-      >
-        Cadastrar Categoria
-      </Text>
-      <TextInput
-        placeholder="Nome da categoria"
-        style={styles.input}
-        value={categoria}
-        onChangeText={setCategoria}
-      />
-      <TouchableOpacity style={[styles.button, addingCategory && styles.buttonDisabled]} onPress={adicionarCategoria} disabled={addingCategory}>
-        {addingCategory ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Adicionar</Text>
-        )}
-      </TouchableOpacity>
-    </View>
-  );
-  // --- FIM DO COMPONENTE DE HEADER DA LISTA ---
-
-
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#38a69d" />
-        <Text>Carregando categorias...</Text>
+      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={theme.text} />
+        <Text style={[styles.loadingText, { color: theme.text }]}>Carregando categorias...</Text>
       </View>
     );
   }
 
+  // <-- MUDANÇA: A estrutura da tela foi alterada
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* A FlatList AGORA é o componente de rolagem principal */}
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      {/* 1. Cabeçalho da tela (fora da FlatList) */}
+      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10 }]}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={28} color={theme.text} />
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: theme.text }]}>Cadastrar Categorias</Text>
+        <View style={styles.spacer} />
+      </View>
+
+      {/* 2. Formulário de adição (fora da FlatList) */}
+      <View style={styles.formContainer}>
+        <TextInput
+          placeholder="Nome da categoria"
+          style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.cardBorder, color: theme.inputText }]}
+          placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
+          value={categoria}
+          onChangeText={setCategoria}
+        />
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme.buttonPrimaryBg }, addingCategory && styles.buttonDisabled]} onPress={adicionarCategoria} disabled={addingCategory}>
+          {addingCategory ? (
+            <ActivityIndicator color={theme.buttonPrimaryText} />
+          ) : (
+            <Text style={[styles.buttonText, { color: theme.buttonPrimaryText }]}>Adicionar</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {/* 3. A FlatList agora cuida apenas da lista */}
       <FlatList
         data={categorias}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text>{item.nome}</Text>
+          <View style={[styles.card, { backgroundColor: theme.cardBackground, borderColor: theme.cardBorder }]}>
+            <Text style={{ color: theme.text, flex: 1 }}>{item.nome}</Text>
             <TouchableOpacity onPress={() => deletarCategoria(item.id, item.nome)}>
-              <MaterialIcons name="delete" size={24} color="red" />
+              <MaterialIcons name="delete" size={24} color={theme.red} />
             </TouchableOpacity>
           </View>
         )}
         ListEmptyComponent={() => (
-          <Text style={styles.emptyListText}>Nenhuma categoria cadastrada ainda.</Text>
+          <Text style={[styles.emptyListText, { color: theme.text }]}>Nenhuma categoria cadastrada ainda.</Text>
         )}
-        // Adicione o ListHeaderComponent aqui
-        ListHeaderComponent={ListHeader}
-        // Adicione estilo ao conteúdo geral da lista via contentContainerStyle
         contentContainerStyle={styles.flatListContentContainer}
+        // <-- MUDANÇA: Removemos o ListHeaderComponent que continha o formulário
       />
     </SafeAreaView>
   );
@@ -174,39 +182,56 @@ export default function CadastroCategoria() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
   },
-  flatListContentContainer: { // Novo estilo para o contentContainerStyle da FlatList
-    paddingHorizontal: 20, // Mantém o padding horizontal
-    paddingBottom: 20, // Mantém o padding inferior
-    flexGrow: 1, // Permite que a lista ocupe todo o espaço disponível
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    paddingBottom: 15,
+    backgroundColor: 'transparent',
   },
-  listHeaderContainer: { // NOVO estilo para o container do cabeçalho da lista
-    // Nenhum padding horizontal aqui, pois flatListContentContainer já tem
-    marginBottom: 20, // Espaço entre o header e a lista
-  },
-  headerText: {
-    fontSize: 24,
+  headerTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20, // Espaço abaixo do texto do header
-    color: '#333',
+    flex: 1,
     textAlign: 'center',
+  },
+  backButton: {
+    padding: 5,
+  },
+  spacer: {
+    width: 38,
+  },
+  // <-- MUDANÇA: Novo container para o formulário
+  formContainer: {
+    paddingHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  flatListContentContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    flexGrow: 1,
+  },
+  // <-- MUDANÇA: O `listHeaderContainer` foi renomeado para `formContainer` e movido
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 8,
     height: 50,
     paddingHorizontal: 15,
-    marginBottom: 20,
+    marginBottom: 20, // <-- MUDANÇA: A margem agora fica no próprio input
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#38a69d',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 20,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -217,16 +242,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#a0a0a0',
   },
   buttonText: {
-    color: '#fff',
     fontWeight: 'bold',
     fontSize: 18,
   },
   card: {
-    backgroundColor: '#fff',
     padding: 15,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#eee',
     marginBottom: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -241,20 +263,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     fontSize: 16,
-    color: '#777',
-  },
-  closeModalButton: {
-    marginTop: 20,
-    backgroundColor: '#e0e0e0',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  closeModalButtonText: {
-    color: '#333',
-    fontWeight: 'bold',
+    fontStyle: 'italic',
   },
   loadingContainer: {
+    // Renomeei para não confundir com o antigo listHeaderContainer
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
