@@ -15,13 +15,11 @@ import { useSignIn } from '@clerk/clerk-expo';
 import { Link, useRouter } from 'expo-router';
 import * as Animatable from 'react-native-animatable';
 import Constants from 'expo-constants';
-import { useTheme } from '../../utils/context/themedContext';
 import { styles } from '../(auth)/styles/forgot';
 
 export default function Forgot() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const router = useRouter();
-  const { theme } = useTheme();
 
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
@@ -119,21 +117,16 @@ export default function Forgot() {
           <ScrollView contentContainerStyle={styles.scrollContent}>
             {!pendingVerification && (
               <>
-                <Text style={[styles.ForgotText, { color: theme.buttonPrimaryBg }]}>Esqueceu sua senha?</Text>
-                <Text style={[styles.text, { color: theme.text }]}>Enviaremos um código para seu e-mail.</Text>
+                <Text style={[styles.ForgotText]}>Esqueceu sua senha?</Text>
+                <Text style={[styles.text]}>Enviaremos um código para seu e-mail.</Text>
 
-                <Text style={[styles.title, { color: theme.text }]}>Email da conta:</Text>
+                <Text style={[styles.title]}>Email da conta:</Text>
                 <TextInput
                   placeholder="Digite seu email"
                   style={[
                     styles.input,
-                    {
-                      backgroundColor: theme.inputBackground,
-                      borderColor: theme.cardBorder,
-                      color: theme.inputText,
-                    },
                   ]}
-                  placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
+                  placeholderTextColor=  '#aaa' 
                   autoCapitalize="none"
                   keyboardType="email-address"
                   value={emailAddress}
@@ -141,93 +134,78 @@ export default function Forgot() {
                 />
 
                 <TouchableOpacity
-                  style={[styles.button, { backgroundColor: theme.buttonPrimaryBg }]}
+                  style={[styles.button]}
                   onPress={handleRequestReset}
                   disabled={!isLoaded}
                 >
-                  <Text style={[styles.buttonText, { color: theme.buttonPrimaryText }]}>Enviar Código</Text>
+                  <Text style={[styles.buttonText]}>Enviar Código</Text>
                 </TouchableOpacity>
               </>
             )}
 
             {pendingVerification && !pendingNewPassword && (
               <>
-                <Text style={[styles.ForgotText, { color: theme.buttonPrimaryBg }]}>Verificar Código</Text>
-                <Text style={[styles.text, { color: theme.text }]}>
+                <Text style={[styles.ForgotText]}>Verificar Código</Text>
+                <Text style={[styles.text]}>
                   Código enviado para {emailAddress}
                 </Text>
 
-                <Text style={[styles.title, { color: theme.text }]}>Código:</Text>
+                <Text style={[styles.title]}>Código:</Text>
                 <TextInput
                   placeholder="Digite o código"
                   style={[
                     styles.input,
-                    {
-                      backgroundColor: theme.inputBackground,
-                      borderColor: theme.cardBorder,
-                      color: theme.inputText,
-                    },
                   ]}
-                  placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
+                  placeholderTextColor='#aaa'
                   keyboardType="number-pad"
                   value={code}
                   onChangeText={setCode}
                 />
 
                 <TouchableOpacity
-                  style={[styles.button, { backgroundColor: theme.buttonPrimaryBg }]}
+                  style={[styles.button]}
                   onPress={handleVerifyCodeAndSetNewPassword}
                   disabled={!isLoaded}
                 >
-                  <Text style={[styles.buttonText, { color: theme.buttonPrimaryText }]}>Verificar</Text>
+                  <Text style={[styles.buttonText]}>Verificar</Text>
                 </TouchableOpacity>
               </>
             )}
 
             {pendingNewPassword && (
               <>
-                <Text style={[styles.ForgotText, { color: theme.buttonPrimaryBg }]}>Nova Senha</Text>
+                <Text style={[styles.ForgotText]}>Nova Senha</Text>
 
-                <Text style={[styles.title, { color: theme.text }]}>Nova Senha:</Text>
+                <Text style={[styles.title]}>Nova Senha:</Text>
                 <TextInput
                   placeholder="Digite nova senha"
                   secureTextEntry
                   style={[
-                    styles.input,
-                    {
-                      backgroundColor: theme.inputBackground,
-                      borderColor: theme.cardBorder,
-                      color: theme.inputText,
-                    },
+                    styles.input
                   ]}
-                  placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
+                  placeholderTextColor= '#aaa'
                   value={password}
                   onChangeText={setPassword}
                 />
 
-                <Text style={[styles.title, { color: theme.text }]}>Confirmar Nova Senha:</Text>
+                <Text style={[styles.title]}>Confirmar Nova Senha:</Text>
                 <TextInput
                   placeholder="Confirme a senha"
                   secureTextEntry
                   style={[
-                    styles.input,
-                    {
-                      backgroundColor: theme.inputBackground,
-                      borderColor: theme.cardBorder,
-                      color: theme.inputText,
-                    },
+                    styles.input
                   ]}
-                  placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
+                  placeholderTextColor= '#aaa'
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                 />
 
                 <TouchableOpacity
-                  style={[styles.button, { backgroundColor: theme.buttonPrimaryBg }]}
+                  style={[styles.button]}
                   onPress={handleSetNewPassword}
                   disabled={!isLoaded}
                 >
-                  <Text style={[styles.buttonText, { color: theme.buttonPrimaryText }]}>Redefinir Senha</Text>
+                  <Text style={[styles.buttonText]}>Redefinir Senha</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -238,8 +216,7 @@ export default function Forgot() {
             >
               <Text
                 style={[
-                  styles.registerText,
-                  { color: theme.text === '#FFFFFF' ? '#aaa' : '#a1a1a1' },
+                  styles.registerText
                 ]}
               >
                 Voltar para o Login

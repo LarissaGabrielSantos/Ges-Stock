@@ -58,7 +58,7 @@ export default function SettingsScreen() {
           </TouchableOpacity>
           <View style={[styles.settingItem, { backgroundColor: theme.cardBackground, borderColor: theme.cardBorder }]}>
             <Text style={[styles.settingItemText, { color: theme.text }]}>Versão</Text>
-            <Text style={[styles.settingItemValue, { color: theme.text }]}>1.0.1</Text>
+            <Text style={[styles.settingItemValue, { color: theme.text }]}>1.0.3</Text>
           </View>
         </ScrollView>
       </View>

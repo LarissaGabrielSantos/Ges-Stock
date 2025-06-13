@@ -22,11 +22,11 @@ export default function AboutScreen() {
   const { theme } = useTheme();
 
   const links = [
-    'https://github.com/LarissaGabrielSantos',
     'https://github.com/GabrielGXM',
-    'https://github.com/onunis',
+    'https://github.com/LarissaGabrielSantos',
     'https://github.com/GabACampos',
     'https://github.com/Cassioogn',
+    'https://github.com/onunis',
   ];
 
   const handlePress = (url: string) => {
@@ -78,7 +78,7 @@ export default function AboutScreen() {
           <Image source={require('../../assets/logo2.png')} style={styles.logo} />
 
           <Text style={[styles.appTitle, { color: theme.buttonPrimaryBg }]}>GES Stock</Text>
-          <Text style={[styles.versionText, { color: theme.text }]}>Versão 1.0.1</Text>
+          <Text style={[styles.versionText, { color: theme.text }]}>Versão 1.0.3</Text>
 
           <Text style={[styles.sectionTitle, { color: theme.text }]}>O que é o GES Stock?</Text>
           <Text style={[styles.bodyText, { color: theme.text }]}>
@@ -148,10 +148,15 @@ export default function AboutScreen() {
           </Text>
 
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Desenvolvimento:</Text>
-          <Text style={[styles.bodyText, { color: theme.text }]}>
-            Gabriel Galdino Ximenes Matos; Larissa Gabriel dos Santos; Gabriel Alves Campos; Cassio
-            Garcia Nobre; Guilherme de Araujo Nunes
-          </Text>
+          <Text style={[styles.bodyText, { color: theme.text }]}>Gabriel Galdino Ximenes Matos;</Text>
+          <Text style={[styles.bodyText, { color: theme.text }]}>Larissa Gabriel dos Santos;</Text>
+          <Text style={[styles.bodyText, { color: theme.text }]}>Gabriel Alves Campos;</Text>
+          <Text style={[styles.bodyText, { color: theme.text }]}>Cassio Garcia Nobre;</Text>
+          <Text style={[styles.bodyText, { color: theme.text }]}>Guilherme de Araujo Nunes</Text>
+          
+
+          
+            
 
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Github:</Text>
           {links.map((link) => (
@@ -167,7 +172,7 @@ export default function AboutScreen() {
             </TouchableOpacity>
           ))}
 
-          <Text style={[styles.versionText, { color: theme.grayDark }]}>Versão 1.0.1</Text>
+          <Text style={[styles.versionText, { color: theme.grayDark }]}>Versão 1.0.3</Text>
         </ScrollView>
       </View>
     </SafeAreaView>

@@ -59,17 +59,17 @@ export default function HistoricoTransacoesScreen() {
     switch (item.type) {
       case 'add_category':
         description = `Categoria "${item.details?.categoryName}" adicionada.`;
-        iconName = 'shape-add';
+        iconName = 'plus';
         iconColor = theme.green;
         break;
       case 'delete_category':
         description = `Categoria "${item.details?.categoryName}" excluída.`;
-        iconName = 'shape-remove';
+        iconName = 'minus';
         iconColor = theme.red;
         break;
       case 'add_product':
         description = `Produto "${item.details?.productName}" (${item.details?.quantityAdded} un.) adicionado na categoria "${item.details?.productCategoryName}".`;
-        iconName = 'package-variant-plus';
+        iconName = 'plus';
         iconColor = theme.green;
         break;
       case 'edit_product':
@@ -86,7 +86,7 @@ export default function HistoricoTransacoesScreen() {
         break;
       case 'delete_product':
         description = `Produto "${item.details?.productName}" (${item.details?.quantityRemoved} un.) excluído da categoria "${item.details?.productCategoryName}".`;
-        iconName = 'package-variant-remove';
+        iconName = 'minus';
         iconColor = theme.red;
         break;
       case 'change_password':

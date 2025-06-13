@@ -3,7 +3,7 @@ import { Colors } from './color';
 export const lightTheme = {
   background: Colors.white,
   text: Colors.black,
-  cardBackground: Colors.white,
+  cardBackground: Colors.grayLight,
   cardBorder: Colors.grayMedium,
   inputBackground: Colors.white,
   inputText: Colors.black,
