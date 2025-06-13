@@ -1,7 +1,8 @@
-📦 Ges-Stock
+#📦 Ges-Stock
+
 Aplicativo mobile desenvolvido com React Native, TypeScript e Expo, voltado para gestão de estoque, com funcionalidades completas de controle de produtos, histórico de movimentações e exportação de dados.
 
-📱 Funcionalidades
+#📱 Funcionalidades
 📊 Visualização de estoque em tempo real
 
 🛒 Cadastro e gerenciamento de produtos e categorias
