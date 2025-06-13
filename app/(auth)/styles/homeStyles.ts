@@ -1,5 +1,3 @@
-// app/(auth)/styles/homeStyles.ts
-
 import { StyleSheet } from 'react-native';
 import { Theme } from '../../../utils/styles/theme';
 
@@ -15,8 +13,7 @@ const homeStyles = (theme: Theme) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // marginHorizontal: 20, <--- REMOVER ESTA LINHA!
-    paddingHorizontal: 20, // <--- AJUSTAR ESTE PADDING para o valor desejado (ex: 20)
+    paddingHorizontal: 20, 
     backgroundColor: theme.cardBackground,
     paddingVertical: 10,
     borderBottomWidth: 1,

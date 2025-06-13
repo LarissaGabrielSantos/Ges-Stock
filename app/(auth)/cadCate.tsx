@@ -6,7 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { useTheme } from '../../utils/context/themedContext';
 import { useRouter } from 'expo-router';
-import { logTransaction } from '../../utils/transactionLogger'; // <-- Importar o logger de transações
+import { logTransaction } from '../../utils/transactionLogger';
+import { styles } from './styles/cadCate';
 
 // Funções de formatação (mantidas)
 const formatCentsToCurrency = (cents: number): string => {
@@ -193,105 +194,3 @@ export default function CadastroCategoria() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    // backgroundColor handled by theme
-  },
-  header: { // Estilo para o header da tela
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: 'transparent', // Será preenchido pelo theme.cardBackground no inline style
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    flex: 1,
-    textAlign: 'center',
-    // color handled by theme
-  },
-  backButton: {
-    padding: 5,
-  },
-  spacer: {
-    width: 28, // Para simetria com o botão de voltar
-  },
-  formContainer: { // Novo container para o formulário (anteriormente parte do ListHeaderComponent)
-    paddingHorizontal: 20,
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  flatListContentContainer: { // Estilo para o contentContainerStyle da FlatList
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    flexGrow: 1,
-  },
-  input: {
-    borderWidth: 1,
-    // borderColor handled by theme
-    borderRadius: 8,
-    height: 50,
-    paddingHorizontal: 15,
-    marginBottom: 20, // Margem abaixo do input
-    fontSize: 16,
-    // backgroundColor handled by theme
-    // color handled by theme
-  },
-  button: {
-    // backgroundColor handled by theme
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  buttonDisabled: {
-    backgroundColor: '#a0a0a0',
-  },
-  buttonText: {
-    // color handled by theme
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  card: {
-    // backgroundColor handled by theme
-    padding: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    // borderColor handled by theme
-    marginBottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 1,
-  },
-  emptyListText: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-    // color handled by theme
-    fontStyle: 'italic',
-  },
-  loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    // backgroundColor handled by theme
-  },
-  loadingText: { // Estilo para o texto de carregamento inicial
-    marginTop: 10,
-    fontSize: 16,
-    // color handled by theme
-  },
-});

@@ -1,13 +1,13 @@
-// ARQUIVO historicoTransacoes.tsx
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Platform, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; // Para ícones
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
 import Constants from 'expo-constants';
 import { useAuth } from '@clerk/clerk-expo';
 import { useTheme } from '../../utils/context/themedContext';
-import { loadTransactionHistory, Transaction } from '../../utils/transactionLogger'; // <-- Importar loadTransactionHistory e Transaction
+import { loadTransactionHistory, Transaction } from '../../utils/transactionLogger'; 
+import { styles } from './styles/historicoTransacoes';
+
 
 
 export default function HistoricoTransacoesScreen() {
@@ -18,7 +18,6 @@ export default function HistoricoTransacoesScreen() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Função para carregar o histórico de transações
   const fetchTransactionHistory = useCallback(async () => {
     if (!userId) {
       setLoading(false);
@@ -45,7 +44,6 @@ export default function HistoricoTransacoesScreen() {
     }
   }, [isLoaded, userId, fetchTransactionHistory, router]);
 
-  // Renderiza cada item de transação na lista
   const renderTransactionItem = ({ item }: { item: Transaction }) => {
     const date = new Date(item.timestamp).toLocaleDateString('pt-BR', {
       day: '2-digit', month: '2-digit', year: 'numeric',
@@ -55,8 +53,8 @@ export default function HistoricoTransacoesScreen() {
     });
 
     let description = '';
-    let iconName: string = 'history'; // Ícone padrão
-    let iconColor: string = theme.text; // Cor padrão do ícone
+    let iconName: string = 'history'; 
+    let iconColor: string = theme.text; 
 
     switch (item.type) {
       case 'add_category':
@@ -78,7 +76,7 @@ export default function HistoricoTransacoesScreen() {
         description = `Produto "${item.details?.productName}" editado.`;
         iconName = 'pencil';
         iconColor = theme.buttonPrimaryBg;
-        // Detalhes extras se houver mudança de quantidade/preço
+       
         if (item.details?.oldQuantity !== undefined && item.details?.newQuantity !== undefined) {
           description += ` Qtde: ${item.details.oldQuantity} -> ${item.details.newQuantity}.`;
         }
@@ -130,16 +128,16 @@ export default function HistoricoTransacoesScreen() {
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
       <View style={styles.container}>
-        {/* Header Customizado */}
+        
         <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10, backgroundColor: theme.cardBackground, borderBottomColor: theme.cardBorder }]}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={28} color={theme.text} />
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { color: theme.text }]}>Histórico de Transações</Text>
-          <View style={styles.spacer} /> {/* Espaçador para centralizar o título */}
+          <View style={styles.spacer} /> 
         </View>
 
-        {/* Lista de Transações */}
+        
         {transactions.length === 0 ? (
           <Text style={[styles.emptyListText, { color: theme.text }]}>Nenhuma transação registrada ainda.</Text>
         ) : (
@@ -154,87 +152,3 @@ export default function HistoricoTransacoesScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    // backgroundColor handled by theme
-    borderBottomWidth: 1,
-    // borderBottomColor handled by theme
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    flex: 1,
-    textAlign: 'center',
-    // color handled by theme
-  },
-  backButton: {
-    padding: 5,
-  },
-  spacer: {
-    width: 28,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    // backgroundColor handled by theme
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    // color handled by theme
-  },
-  emptyListText: {
-    textAlign: 'center',
-    marginTop: 50,
-    fontSize: 16,
-    // color handled by theme
-    fontStyle: 'italic',
-  },
-  flatListContentContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    flexGrow: 1,
-  },
-  transactionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginBottom: 10,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 1,
-    // backgroundColor and borderColor handled by theme
-  },
-  transactionIcon: {
-    marginRight: 15,
-  },
-  transactionDetails: {
-    flex: 1,
-  },
-  transactionDescription: {
-    fontSize: 16,
-    marginBottom: 5,
-    // color handled by theme
-  },
-  transactionTimestamp: {
-    fontSize: 12,
-    // color handled by theme (grayDark)
-  },
-});
