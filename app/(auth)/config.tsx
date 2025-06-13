@@ -38,7 +38,7 @@ export default function SettingsScreen() {
             <Text style={[styles.settingItemText, { color: theme.text }]}>Modo Escuro</Text>
             <Switch
               trackColor={{ false: theme.buttonSecondaryBg, true: theme.buttonPrimaryBg }}
-              thumbColor={Platform.OS === 'android' ? theme.buttonPrimaryText : theme.buttonPrimaryBg} // Thumb diferente para Android
+              thumbColor={Platform.OS === 'android' ? theme.buttonPrimaryText : theme.buttonPrimaryBg} 
               ios_backgroundColor={theme.buttonSecondaryBg}
               onValueChange={handleToggleDarkMode}
               value={isDarkModeEnabled}
@@ -50,7 +50,6 @@ export default function SettingsScreen() {
             <Text style={[styles.settingItemText, { color: theme.text }]}>Editar Perfil</Text>
             <Ionicons name="chevron-forward" size={20} color={theme.text} />
           </TouchableOpacity>
-          {/* Adicione mais opções de conta aqui (Mudar Senha, Gerenciar Emails - como links ou botões) */}
 
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Sobre o App</Text>
           <TouchableOpacity style={[styles.settingItem, { backgroundColor: theme.cardBackground, borderColor: theme.cardBorder }]} onPress={() => router.push('/(auth)/about')}>

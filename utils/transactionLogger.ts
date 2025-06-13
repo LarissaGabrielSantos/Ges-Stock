@@ -1,11 +1,9 @@
-// utils/transactionLogger.ts
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type TransactionType =
   'add_category' | 'delete_category' |
   'add_product' | 'edit_product' | 'delete_product' |
-  'change_password' | 'logout' | 'edit_profile'; // 'edit_profile' já deveria estar aqui
+  'change_password' | 'logout' | 'edit_profile';
 
 export interface TransactionDetails {
   categoryName?: string;
@@ -19,21 +17,20 @@ export interface TransactionDetails {
   newPrice?: number;
   productCategoryName?: string;
   
-  // --- NOVAS PROPRIEDADES PARA DETALHES DO PERFIL ---
   oldFirstName?: string | null;
   newFirstName?: string | null;
   oldLastName?: string | null;
   newLastName?: string | null;
   oldCompanyName?: string | null;
   newCompanyName?: string | null;
-  // --- FIM NOVAS PROPRIEDADES ---
+
 }
 
 export interface Transaction {
   id: string;
   userId: string;
   type: TransactionType;
-  timestamp: string; // ISO string for date and time
+  timestamp: string; 
   details?: TransactionDetails;
 }
 

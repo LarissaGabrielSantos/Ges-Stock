@@ -4,7 +4,7 @@ import { Slot, useRouter, useSegments } from "expo-router";
 import React, { useEffect } from "react";
 import { ActivityIndicator, View, Text, StyleSheet, LogBox } from "react-native"; 
 import { ThemeProvider } from '../utils/context/themedContext';
-
+import { appLoadingStyles } from '././(auth)/styles/_layout';
 
 LogBox.ignoreLogs([
   "Warning: Text strings must be rendered within a <Text> component.",
@@ -23,19 +23,6 @@ function AppLoadingScreen() {
   );
 }
 
-const appLoadingStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  text: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#555",
-  },
-});
 
 
 function InitialLayout() {

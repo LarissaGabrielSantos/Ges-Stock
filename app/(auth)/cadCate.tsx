@@ -9,7 +9,6 @@ import { useRouter } from 'expo-router';
 import { logTransaction } from '../../utils/transactionLogger';
 import { styles } from './styles/cadCate';
 
-// Funções de formatação (mantidas)
 const formatCentsToCurrency = (cents: number): string => {
   if (isNaN(cents) || cents < 0) return "$0.00";
   const actualCents = Math.round(Math.max(0, cents));
@@ -25,7 +24,6 @@ const parseCurrencyInputToCents = (text: string): number => {
   return parseInt(cleanText, 10);
 };
 
-// Tipagem
 interface Categoria {
   id: string;
   nome: string;
@@ -39,7 +37,7 @@ export default function CadastroCategoria() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [addingCategory, setAddingCategory] = useState(false);
-  const { theme } = useTheme(); // Chamar o hook useTheme
+  const { theme } = useTheme(); 
 
   const CATEGORIAS_KEY = `user_${userId}_categorias`;
 
@@ -89,9 +87,7 @@ export default function CadastroCategoria() {
       setCategoria('');
       Alert.alert("Sucesso", "Categoria adicionada!");
 
-      // --- REGISTRAR TRANSAÇÃO: Adição de Categoria ---
       await logTransaction(userId, 'add_category', { categoryName: newCategoria.nome });
-      // --- FIM REGISTRO ---
 
     } catch (e) {
       console.error("Erro ao adicionar categoria no Async Storage:", e);
@@ -110,7 +106,7 @@ export default function CadastroCategoria() {
         {
           text: "Excluir",
           onPress: async () => {
-            if (!userId) { // Garante userId antes de deletar e logar
+            if (!userId) {
               Alert.alert("Erro", "Usuário não identificado.");
               return;
             }
@@ -120,9 +116,7 @@ export default function CadastroCategoria() {
               setCategorias(updatedCategorias);
               Alert.alert("Sucesso", "Categoria excluída!");
 
-              // --- REGISTRAR TRANSAÇÃO: Exclusão de Categoria ---
               await logTransaction(userId, 'delete_category', { categoryName: nome });
-              // --- FIM REGISTRO ---
 
             } catch (e) {
               console.error("Erro ao deletar categoria:", e);
@@ -143,10 +137,8 @@ export default function CadastroCategoria() {
     );
   }
 
-  // --- MUDANÇA: A estrutura da tela foi alterada para View estática + FlatList ---
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-      {/* Cabeçalho da tela (estático) */}
       <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10, backgroundColor: theme.cardBackground, borderBottomColor: theme.cardBorder }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={28} color={theme.text} />
@@ -155,7 +147,6 @@ export default function CadastroCategoria() {
         <View style={styles.spacer} />
       </View>
 
-      {/* Formulário de adição (estático) */}
       <View style={styles.formContainer}>
         <TextInput
           placeholder="Nome da categoria"
@@ -173,7 +164,6 @@ export default function CadastroCategoria() {
         </TouchableOpacity>
       </View>
 
-      {/* A FlatList agora cuida apenas da lista (e é o componente de rolagem principal) */}
       <FlatList
         data={categorias}
         keyExtractor={(item) => item.id}

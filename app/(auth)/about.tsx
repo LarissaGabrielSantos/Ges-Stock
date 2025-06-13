@@ -26,6 +26,7 @@ export default function AboutScreen() {
     'https://github.com/GabrielGXM',
     'https://github.com/onunis',
     'https://github.com/GabACampos',
+    'https://github.com/Cassioogn',
   ];
 
   const handlePress = (url: string) => {

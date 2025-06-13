@@ -15,17 +15,16 @@ export const lightTheme = {
   green: Colors.green,
   grayDark: Colors.grayDark,
   accent: Colors.accent,
-  // Adicione mais cores conforme a necessidade do seu design
 };
 
 export const darkTheme = {
-  background: '#121212', // Fundo bem escuro
+  background: '#121212', 
   text: Colors.white,
-  cardBackground: '#1e1e1e', // Cartões e elementos mais escuros
+  cardBackground: '#1e1e1e', 
   cardBorder: '#333',
-  inputBackground: '#2a2a2a', // Inputs mais escuros
+  inputBackground: '#2a2a2a', 
   inputText: Colors.white,
-  buttonPrimaryBg: '#4CAF50', // Um verde mais vibrante para dark mode
+  buttonPrimaryBg: '#4CAF50', 
   buttonPrimaryText: Colors.white,
   buttonSecondaryBg: '#333',
   buttonSecondaryText: Colors.white,
@@ -33,8 +32,6 @@ export const darkTheme = {
   green: Colors.green,
   grayDark: Colors.grayDark,
   accent: Colors.accent,
-  // Adicione mais cores específicas para o tema escuro
 };
 
-// Define o tipo para um objeto de tema
 export type Theme = typeof lightTheme;

@@ -1,5 +1,3 @@
-// ARQUIVO profile.tsx
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, StyleSheet, SafeAreaView, Platform, ScrollView, StatusBar, Modal } from 'react-native';
 import { useUser, useClerk } from '@clerk/clerk-expo';
@@ -7,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useTheme } from '../../utils/context/themedContext';
-import { logTransaction } from '../../utils/transactionLogger'; // Importar o logger de transações
+import { logTransaction } from '../../utils/transactionLogger'; 
 import { styles } from './styles/profile';
 
 
@@ -21,7 +19,6 @@ export default function CustomProfile() {
   const [companyName, setCompanyName] = useState('');
   const [loadingSave, setLoadingSave] = useState(false);
 
-  // Estados para Mudar Senha Modal
   const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -51,7 +48,6 @@ export default function CustomProfile() {
           onPress: async () => {
             setLoadingSave(true);
             try {
-              // Capturar valores antigos para o log
               const oldFirstName = user.firstName;
               const oldLastName = user.lastName;
               const oldCompanyName = (user.unsafeMetadata?.companyName as string);
@@ -65,15 +61,13 @@ export default function CustomProfile() {
               });
               Alert.alert("Sucesso", "Perfil atualizado!");
 
-              // --- REGISTRAR TRANSAÇÃO: Edição de Perfil ---
-              if (user.id) { // Garante que userId está disponível
-                await logTransaction(user.id, 'edit_profile', { // CORREÇÃO DO TIPO: 'edit_profile'
+              if (user.id) {
+                await logTransaction(user.id, 'edit_profile', { 
                   oldFirstName: oldFirstName, newFirstName: firstName,
                   oldLastName: oldLastName, newLastName: lastName,
                   oldCompanyName: oldCompanyName, newCompanyName: companyName,
                 });
               }
-              // --- FIM REGISTRO ---
 
             } catch (e: any) {
               Alert.alert("Erro", e.errors?.[0]?.message || "Não foi possível atualizar o perfil.");
@@ -96,7 +90,7 @@ export default function CustomProfile() {
         {
           text: "Sair",
           onPress: async () => {
-            if (user?.id) { // Garante userId antes de logar
+            if (user?.id) { 
                 await logTransaction(user.id, 'logout');
             }
             await signOut();
@@ -108,7 +102,6 @@ export default function CustomProfile() {
     );
   };
 
-  // === LÓGICA PARA MUDAR SENHA ===
   const handleChangePassword = async () => {
     if (!isLoaded || !user || loadingChangePassword) return;
 
@@ -139,13 +132,10 @@ export default function CustomProfile() {
               setChangePasswordModalVisible(false);
               setCurrentPassword('');
               setNewPassword('');
-              // setConfirmNewPassword(''); // Já limpa no retorno do modal
 
-              // --- REGISTRAR TRANSAÇÃO: Mudança de Senha ---
               if (user.id) {
                   await logTransaction(user.id, 'change_password');
               }
-              // --- FIM REGISTRO ---
 
             } catch (e: any) {
               Alert.alert("Erro", e.errors?.[0]?.message || "Não foi possível mudar a senha.");
@@ -174,7 +164,6 @@ export default function CustomProfile() {
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
       <View style={styles.container}>
-        {/* Header Customizado */}
         <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10, backgroundColor: theme.cardBackground, borderBottomColor: theme.cardBorder }]}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={28} color={theme.text} />
@@ -192,25 +181,21 @@ export default function CustomProfile() {
           <Text style={[styles.label, { color: theme.text }]}>Nome</Text>
           <TextInput
             placeholder="Nome"
-            // REMOVER ATRIBUTOS DUPLICADOS AQUI
             value={firstName}
             onChangeText={setFirstName}
             style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.cardBorder, color: theme.inputText }]}
             placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
-            // value={firstName} <--- REMOVER ESTA LINHA
-            // onChangeText={setFirstName} <--- REMOVER ESTA LINHA
           />
+
           <Text style={[styles.label, { color: theme.text }]}>Sobrenome</Text>
           <TextInput
             placeholder="Sobrenome"
-            // REMOVER ATRIBUTOS DUPLICADOS AQUI
             value={lastName}
             onChangeText={setLastName}
             style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.cardBorder, color: theme.inputText }]}
             placeholderTextColor={theme.text === '#FFFFFF' ? '#aaa' : '#999'}
-            // value={lastName} <--- REMOVER ESTA LINHA
-            // onChangeText={setLastName} <--- REMOVER ESTA LINHA
           />
+
           <Text style={[styles.label, { color: theme.text }]}>Nome da Empresa</Text>
           <TextInput
             placeholder="Nome da Empresa"
@@ -226,7 +211,6 @@ export default function CustomProfile() {
 
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Opções de Segurança</Text>
           
-          {/* Botão para Mudar Senha */}
           <TouchableOpacity style={[styles.securityOptionButton, { backgroundColor: theme.cardBackground, borderColor: theme.cardBorder }]} onPress={() => setChangePasswordModalVisible(true)}>
             <Text style={[styles.securityOptionText, { color: theme.text }]}>Mudar Senha</Text>
             <Ionicons name="chevron-forward" size={20} color={theme.text} />

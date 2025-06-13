@@ -4,15 +4,13 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Activi
 import { useAuth } from "@clerk/clerk-expo";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { useTheme } // <-- Caminho atualizado pelo seu feedback
+import { useTheme } 
  from '../../utils/context/themedContext'; 
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { logTransaction } from '../../utils/transactionLogger';
 import { styles } from './styles/cadProd';
 
-
-// Converte um número inteiro (centavos) para uma string de moeda formatada ($X.XX)
 const formatCentsToCurrency = (cents: number): string => {
   if (isNaN(cents) || cents < 0) {
     return "$0.00";
@@ -24,7 +22,6 @@ const formatCentsToCurrency = (cents: number): string => {
   return `$${integerPart}.${decimalPart}`;
 };
 
-// Converte uma string de input (com ou sem símbolos, letras, etc.) para um número inteiro (centavos)
 const parseCurrencyInputToCents = (text: string): number => {
   const cleanText = text.replace(/[^0-9]/g, '');
   if (!cleanText) {
@@ -33,7 +30,6 @@ const parseCurrencyInputToCents = (text: string): number => {
   return parseInt(cleanText, 10);
 };
 
-// Tipagem para Categoria e Produto (para Async Storage)
 interface Categoria {
   id: string;
   nome: string;
@@ -45,7 +41,7 @@ interface Produto {
   nome: string;
   quantidade: number;
   preco: number;
-  categoriaId: string; // Renomeado de categoria_id para consistência com JS
+  categoriaId: string; 
   userId: string;
 }
 
@@ -53,18 +49,17 @@ export default function CadastroProduto() {
   const { userId, isLoaded } = useAuth();
   const [nome, setNome] = useState('');
   const [quantidade, setQuantidade] = useState('');
-  const [precoCents, setPrecoCents] = useState(0); // Estado para o preço em CENTAVOS
+  const [precoCents, setPrecoCents] = useState(0); 
   const [selectedCategoria, setSelectedCategoria] = useState<Categoria | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [categoriasDisponiveis, setCategoriasDisponiveis] = useState<Categoria[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
   const [savingProduct, setSavingProduct] = useState(false);
 
-  const { theme } = useTheme(); // Chamar o hook useTheme
-  const router = useRouter(); // Chamar useRouter para botão de voltar
+  const { theme } = useTheme(); 
+  const router = useRouter(); 
 
 
-  // Chaves para AsyncStorage
   const CATEGORIAS_ASYNC_KEY = `user_${userId}_categorias`;
   const PRODUTOS_ASYNC_KEY = `user_${userId}_produtos`;
 
@@ -120,7 +115,7 @@ export default function CadastroProduto() {
         id: Date.now().toString(),
         nome: nome.trim(),
         quantidade: parsedQuantidade,
-        preco: precoCents / 100, // Salva o preço como REAL (ex: 1.00)
+        preco: precoCents / 100, 
         categoriaId: selectedCategoria.id,
         userId: userId,
       };
@@ -131,17 +126,15 @@ export default function CadastroProduto() {
       Alert.alert("Sucesso", "Produto cadastrado com sucesso!");
       setNome('');
       setQuantidade('');
-      setPrecoCents(0); // Reseta para 0 centavos
+      setPrecoCents(0);
       setSelectedCategoria(null);
 
-      // --- REGISTRAR TRANSAÇÃO: Adição de Produto ---
       await logTransaction(userId, 'add_product', {
         productName: newProduto.nome,
         quantityAdded: newProduto.quantidade,
         newPrice: newProduto.preco,
-        productCategoryName: selectedCategoria.nome, // Nome da categoria
+        productCategoryName: selectedCategoria.nome, 
       });
-      // --- FIM REGISTRO ---
 
     } catch (e) {
       console.error("Erro ao salvar produto no Async Storage:", e);
@@ -153,7 +146,6 @@ export default function CadastroProduto() {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-      {/* Header Customizado */}
       <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10, backgroundColor: theme.cardBackground, borderBottomColor: theme.cardBorder }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={28} color={theme.text} />

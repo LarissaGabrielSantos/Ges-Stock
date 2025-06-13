@@ -1,17 +1,15 @@
-// ARQUIVO exportData.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, ScrollView, Platform, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; // MaterialCommunityIcons para ícone de PDF
-import Constants from 'expo-constants'; // Certifique-se de ter 'expo install expo-constants'
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
+import Constants from 'expo-constants'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Print from 'expo-print'; // expo install expo-print
-import * as Sharing from 'expo-sharing'; // expo install expo-sharing
-import { useAuth } from '@clerk/clerk-expo'; // Para obter o userId do Clerk
-import { useTheme } from '../../utils/context/themedContext'; // <-- IMPORTAR useTheme
+import * as Print from 'expo-print'; 
+import * as Sharing from 'expo-sharing'; 
+import { useAuth } from '@clerk/clerk-expo'; 
+import { useTheme } from '../../utils/context/themedContext'; 
 import { styles } from './styles/exportData';
 
-// Tipagens para Categoria e Produto (devem ser consistentes em todo o app)
 interface Categoria {
   id: string;
   nome: string;
@@ -27,26 +25,22 @@ interface Produto {
   userId: string;
 }
 
-// Funções de formatação de moeda (copiadas de outras telas para reusabilidade)
 const formatPriceForDisplay = (price: number): string => {
     return `R$ ${price.toFixed(2).replace('.', ',')}`;
 };
 
-// Função para construir o HTML do relatório PDF
 const buildStockHtml = (products: Produto[], categories: Categoria[]): string => {
     let categoriesHtml = '';
     let uncategorizedProductsHtml = '';
     let totalProductsCount = 0;
     let totalStockValue = 0;
 
-    // Mapeia categorias para um objeto para acesso rápido (nome da categoria pelo ID)
     const categoryMap = new Map<string, string>();
     categories.forEach(cat => categoryMap.set(cat.id, cat.nome));
 
-    // Agrupa produtos por categoria (e sem categoria)
     const productsByCategory = new Map<string, Produto[]>();
     products.forEach(p => {
-        const categoryKey = p.categoriaId || 'uncategorized'; // Usa 'uncategorized' para produtos sem categoria
+        const categoryKey = p.categoriaId || 'uncategorized'; 
         if (!productsByCategory.has(categoryKey)) {
             productsByCategory.set(categoryKey, []);
         }
@@ -55,10 +49,8 @@ const buildStockHtml = (products: Produto[], categories: Categoria[]): string =>
         totalStockValue += p.quantidade * p.preco;
     });
 
-    // Ordena categorias por nome para exibição no relatório
     const sortedCategories = [...categories].sort((a, b) => a.nome.localeCompare(b.nome));
 
-    // Constrói o HTML para produtos por categoria
     sortedCategories.forEach(cat => {
         const catProducts = productsByCategory.get(cat.id);
         if (catProducts && catProducts.length > 0) {
@@ -78,7 +70,6 @@ const buildStockHtml = (products: Produto[], categories: Categoria[]): string =>
         }
     });
 
-    // Constrói o HTML para produtos sem categoria
     const uncategorized = productsByCategory.get('uncategorized');
     if (uncategorized && uncategorized.length > 0) {
         uncategorizedProductsHtml += '<h2>Produtos Sem Categoria</h2>';
@@ -96,7 +87,6 @@ const buildStockHtml = (products: Produto[], categories: Categoria[]): string =>
         uncategorizedProductsHtml += '</table>';
     }
 
-    // Estrutura HTML completa do relatório
     const htmlFullContent = `
         <!DOCTYPE html>
         <html>
@@ -151,12 +141,11 @@ export default function ExportDataScreen() {
   const [products, setProducts] = useState<Produto[]>([]);
   const [categories, setCategories] = useState<Categoria[]>([]);
 
-  const { theme } = useTheme(); // CHAMAR O HOOK useTheme AQUI!
+  const { theme } = useTheme(); 
 
   const PRODUTOS_ASYNC_KEY = `user_${userId}_produtos`;
   const CATEGORIAS_ASYNC_KEY = `user_${userId}_categorias`;
 
-  // Função para carregar produtos e categorias do Async Storage
   const loadInventoryData = useCallback(async () => {
     if (!userId) {
       setLoading(false);
@@ -215,45 +204,43 @@ export default function ExportDataScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}> {/* Usar cores do tema */}
-        <ActivityIndicator size="large" color={theme.text} /> {/* Usar cores do tema */}
-        <Text style={[styles.loadingText, { color: theme.text }]}>Carregando dados para exportação...</Text> {/* Usar cores do tema */}
+      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}> 
+        <ActivityIndicator size="large" color={theme.text} />
+        <Text style={[styles.loadingText, { color: theme.text }]}>Carregando dados para exportação...</Text> 
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}> {/* Usar cores do tema */}
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}> 
       <View style={styles.container}>
-        {/* Header Customizado */}
         <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : Constants.statusBarHeight + 10, backgroundColor: theme.cardBackground, borderBottomColor: theme.cardBorder }]}> {/* Usar cores do tema */}
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={28} color={theme.text} /> {/* Usar cores do tema */}
+            <Ionicons name="arrow-back" size={28} color={theme.text} /> 
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: theme.text }]}>Exportar Dados</Text> {/* Usar cores do tema */}
-          <View style={styles.spacer} /> {/* Espaçador para centralizar o título */}
+          <Text style={[styles.headerTitle, { color: theme.text }]}>Exportar Dados</Text> 
+          <View style={styles.spacer} /> 
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Relatório de Estoque em PDF</Text> {/* Usar cores do tema */}
-          <Text style={[styles.bodyText, { color: theme.text }]}> {/* Usar cores do tema */}
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Relatório de Estoque em PDF</Text> 
+          <Text style={[styles.bodyText, { color: theme.text }]}> 
             Clique no botão abaixo para gerar um relatório completo do seu estoque atual em formato PDF.
             O relatório incluirá todos os produtos, suas quantidades, preços e categorias associadas.
           </Text>
 
-          {/* Seção para mostrar resumo de dados ou mensagem de vazio */}
           {products.length === 0 && categories.length === 0 ? (
             <Text style={[styles.emptyDataText, { color: theme.text }]}>Nenhum produto ou categoria cadastrado para exportação.</Text> 
           ) : (
             <>
-              <Text style={[styles.dataSummary, { color: theme.text }]}> {/* Usar cores do tema */}
+              <Text style={[styles.dataSummary, { color: theme.text }]}> 
                 Produtos Cadastrados: <Text style={styles.boldText}>{products.length}</Text>
               </Text>
-              <Text style={[styles.dataSummary, { color: theme.text }]}> {/* Usar cores do tema */}
+              <Text style={[styles.dataSummary, { color: theme.text }]}> 
                 Categorias Cadastradas: <Text style={styles.boldText}>{categories.length}</Text>
               </Text>
               <TouchableOpacity
-                style={[styles.button, { backgroundColor: theme.buttonPrimaryBg }, isGeneratingPdf && styles.buttonDisabled]} // Usar cores do tema
+                style={[styles.button, { backgroundColor: theme.buttonPrimaryBg }, isGeneratingPdf && styles.buttonDisabled]} 
                 onPress={generateAndSharePdf}
                 disabled={isGeneratingPdf}
               >
@@ -261,15 +248,15 @@ export default function ExportDataScreen() {
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <>
-                    <Ionicons name="document-text-outline" size={24} color={theme.buttonPrimaryText} style={styles.buttonIcon} /> {/* Ícone para PDF */}
-                    <Text style={[styles.buttonText, { color: theme.buttonPrimaryText }]}>Gerar e Compartilhar PDF</Text> {/* Usar cores do tema */}
+                    <Ionicons name="document-text-outline" size={24} color={theme.buttonPrimaryText} style={styles.buttonIcon} /> 
+                    <Text style={[styles.buttonText, { color: theme.buttonPrimaryText }]}>Gerar e Compartilhar PDF</Text> 
                   </>
                 )}
               </TouchableOpacity>
             </>
           )}
 
-          <Text style={[styles.noteText, { color: theme.text }]}> {/* Usar cores do tema */}
+          <Text style={[styles.noteText, { color: theme.text }]}> 
             Atenção: Os dados exportados são os que estão salvos localmente no seu dispositivo.
             Para imprimir, utilize a opção de compartilhamento e selecione uma impressora.
           </Text>

@@ -22,14 +22,14 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
-    flex: 1, // Para centralizar o título
+    flex: 1, 
     textAlign: 'center',
   },
   backButton: {
     padding: 5,
   },
   spacer: {
-    width: 28, // Largura do ícone de voltar para simetria
+    width: 28, 
   },
   loadingContainer: {
     flex: 1,
