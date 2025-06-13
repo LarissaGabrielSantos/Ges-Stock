@@ -1,85 +1,122 @@
-📦 Ges-Stock
-Aplicativo mobile desenvolvido com React Native e TypeScript para gestão de estoque, com funcionalidades como cadastro de produtos, categorias, visualização de estoque, histórico de transações e exportação de dados.
+# 📦 Ges-Stock
 
-📱 Funcionalidades
-📊 Visualização de estoque em tempo real
+**Ges-Stock** é um aplicativo mobile de gerenciamento de estoque desenvolvido com **React Native** e **TypeScript**. Ele utiliza **Clerk** para autenticação segura e **AsyncStorage** para armazenar dados localmente no dispositivo.
 
-🛒 Cadastro e gerenciamento de produtos e categorias
+---
 
-🔄 Histórico de transações (entradas e saídas)
+## 🧩 Tecnologias Utilizadas
 
-⚙️ Configurações personalizadas
+- [React Native](https://reactnative.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Clerk](https://clerk.dev/) – Autenticação e gerenciamento de usuários
+- [AsyncStorage](https://react-native-async-storage.github.io/async-storage/) – Armazenamento local
+- [Expo](https://expo.dev/) – Facilita o desenvolvimento e testes
 
-🗂️ Exportação de dados
+---
 
-👤 Perfil de usuário
+## ⚙️ Instalação e Execução
 
-🔐 Layout de autenticação
+### 1. Pré-requisitos
 
-🚀 Tecnologias utilizadas
-React Native
+- Node.js (recomenda-se a versão LTS)
+- Expo CLI:
+  ```bash
+  npm install -g expo-cli
+  ```
+- Conta na [Clerk.dev](https://clerk.dev/)
 
-TypeScript
+### 2. Clonando o repositório
 
-Expo (via app.json)
-
-React Navigation
-
-AsyncStorage (presumido por estrutura de app)
-
-[Context API] para gerenciamento de estado (presumido)
-
-Outros pacotes listados no package.json
-
-🧱 Estrutura de pastas
-bash
-Copiar
-Editar
-app/
-├── _layout.tsx                # Layout global
-├── (auth)/                    # Telas autenticadas
-│   ├── home.tsx               # Tela principal
-│   ├── VizuEstoq.tsx          # Visualização de estoque
-│   ├── cadProd.tsx            # Cadastro de produtos
-│   ├── cadCate.tsx            # Cadastro de categorias
-│   ├── historicoTransacoes.tsx# Histórico de transações
-│   ├── config.tsx             # Configurações
-│   ├── exportData.tsx         # Exportar dados
-│   ├── profile.tsx            # Perfil do usuário
-│   └── auth_layout.tsx        # Layout para área autenticada
-🛠️ Como executar
-Pré-requisitos
-Node.js
-
-Expo CLI (npm install -g expo-cli)
-
-Yarn ou npm
-
-Instalação
-bash
-Copiar
-Editar
-# Clone o repositório
+```bash
 git clone https://github.com/seu-usuario/Ges-Stock.git
-
-# Acesse o diretório
 cd Ges-Stock
+```
 
-# Instale as dependências
+### 3. Instalando as dependências
+
+```bash
 npm install
-# ou
-yarn install
+```
 
-# Rode o projeto
+### 4. Configuração do Clerk
+
+Crie um arquivo `.env` na raiz do projeto e adicione as chaves da sua conta Clerk:
+
+```env
+CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SIGN_IN_URL=your_signin_url
+CLERK_SIGN_UP_URL=your_signup_url
+```
+
+### 5. Iniciando a aplicação
+
+```bash
 npx expo start
-📂 Arquivos importantes
-.env – variáveis de ambiente
+```
 
-app.json – configuração do Expo
+> Escaneie o QR code no terminal com o app Expo Go para testar em seu dispositivo físico.
 
-tsconfig.json – configuração do TypeScript
+---
 
-babel.config.js – configuração do Babel
+## 📲 Instalando no seu dispositivo
 
-📄 Licença
+### Android/iOS
+
+1. Instale o app **Expo Go** na Play Store ou App Store.
+2. Execute `npx expo start` no terminal do projeto.
+3. Use a câmera ou o app Expo Go para escanear o QR code.
+4. O app será carregado diretamente no seu celular.
+
+> Se quiser gerar um `.apk` ou `.ipa`, pode usar:
+```bash
+eas build --platform android
+```
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+Ges-Stock
+├── app/                  # Telas e componentes principais
+├── assets/               # Imagens e ícones
+├── utils/                # Funções auxiliares
+├── .env                  # Variáveis de ambiente
+├── index.ts              # Ponto de entrada
+├── package.json
+├── tsconfig.json
+```
+
+---
+
+## ✅ Funcionalidades
+
+- Autenticação com Clerk (login, cadastro, logout)
+- Armazenamento local com AsyncStorage
+- Gestão de estoque simples
+- Interface responsiva
+
+---
+
+## 🧪 Testes
+
+O projeto pode ser testado manualmente no Expo Go, mas futuramente pode ser estendido com bibliotecas como:
+
+- Jest
+- React Native Testing Library
+
+---
+
+## 👥 Contribuição
+
+1. Fork este repositório.
+2. Crie sua branch: `git checkout -b minha-feature`
+3. Faça suas alterações e commit: `git commit -m 'feat: nova funcionalidade'`
+4. Push na branch: `git push origin minha-feature`
+5. Abra um Pull Request.
+
+---
+
+## 📄 Licença
+
 Este projeto está licenciado sob a licença MIT.
